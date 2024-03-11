@@ -35,7 +35,7 @@ resource "ibm_resource_instance" "en_instance" {
 #############################################################################
 
 resource "ibm_en_destination_cos" "cos_en_destination" {
-  count         = var.cos_integration_enabled != null ? 1 : 0
+  count         = var.cos_integration_enabled ? 1 : 0
   instance_guid = ibm_resource_instance.en_instance.guid
   name          = var.destination_name
   type          = "ibmcos"
