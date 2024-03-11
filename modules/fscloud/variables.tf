@@ -24,7 +24,7 @@ variable "region" {
   default     = "us-south"
 }
 
-variable "skip_iam_authorization_policy" {
+variable "skip_en_kms_auth_policy" {
   type        = bool
   description = "Set to true to skip the creation of an IAM authorization policy that permits all event notification instances in the provided resource group reader access to the instance specified in the existing_kms_instance_guid variable."
   default     = false

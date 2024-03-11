@@ -31,6 +31,25 @@ resource "ibm_resource_instance" "en_instance" {
 }
 
 #############################################################################
+# Event Notification COS integration
+#############################################################################
+
+resource "ibm_en_destination_cos" "cos_en_destination" {
+  count         = var.cos_integration_enabled != null ? 1 : 0
+  instance_guid = ibm_resource_instance.en_instance.guid
+  name          = var.destination_name
+  type          = "ibmcos"
+  description   = "IBM Cloud Object Storage Destination for event notification"
+  config {
+    params {
+      bucket_name = var.bucket_name
+      instance_id = var.cos_instance_id
+      endpoint    = "https://s3.${var.cos_region}.cloud-object-storage.appdomain.cloud"
+    }
+  }
+}
+
+#############################################################################
 # Event Notification KMS integration
 #############################################################################
 
@@ -64,8 +83,25 @@ locals {
 }
 
 # Create IAM Authorization Policies to allow event notification to access kms for the encryption key
+resource "ibm_iam_authorization_policy" "cos_policy" {
+  count                       = var.cos_integration_enabled == false || var.skip_en_cos_auth_policy ? 0 : 1
+  source_service_name         = "event-notifications"
+  source_resource_instance_id = ibm_resource_instance.en_instance.guid
+  target_service_name         = "cloud-object-storage"
+  target_resource_instance_id = var.cos_instance_id
+  roles                       = ["Reader"]
+  description                 = "To collect the events which failed delivery for your Event Notification instance ${ibm_resource_instance.en_instance.guid}."
+}
+
+resource "time_sleep" "wait_for_cos_authorization_policy" {
+  depends_on = [ibm_iam_authorization_policy.cos_policy]
+
+  create_duration = "30s"
+}
+
+# Create IAM Authorization Policies to allow event notification to access kms for the encryption key
 resource "ibm_iam_authorization_policy" "kms_policy" {
-  count                       = var.kms_encryption_enabled == false || var.skip_iam_authorization_policy ? 0 : 1
+  count                       = var.kms_encryption_enabled == false || var.skip_en_kms_auth_policy ? 0 : 1
   source_service_name         = "event-notifications"
   source_resource_instance_id = ibm_resource_instance.en_instance.guid
   target_service_name         = local.kms_service
@@ -75,7 +111,7 @@ resource "ibm_iam_authorization_policy" "kms_policy" {
 }
 
 # workaround for https://github.com/IBM-Cloud/terraform-provider-ibm/issues/4478
-resource "time_sleep" "wait_for_authorization_policy" {
+resource "time_sleep" "wait_for_kms_authorization_policy" {
   depends_on = [ibm_iam_authorization_policy.kms_policy]
 
   create_duration = "30s"

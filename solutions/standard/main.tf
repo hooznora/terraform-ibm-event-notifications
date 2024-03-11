@@ -68,9 +68,15 @@ module "event_notifications" {
   service_endpoints        = var.service_endpoints
   service_credential_names = var.service_credential_names
   # KMS Related
-  kms_encryption_enabled        = true
-  kms_endpoint_url              = var.kms_endpoint_url
-  existing_kms_instance_crn     = local.existing_kms_instance_crn
-  root_key_id                   = local.en_kms_key_id
-  skip_iam_authorization_policy = var.skip_en_kms_auth_policy
+  kms_encryption_enabled    = true
+  kms_endpoint_url          = var.kms_endpoint_url
+  existing_kms_instance_crn = local.existing_kms_instance_crn
+  root_key_id               = local.en_kms_key_id
+  skip_en_kms_auth_policy   = var.skip_en_kms_auth_policy
+  # COS Related
+  cos_integration_enabled = var.cos_integration_enabled
+  destination_name        = var.destination_name
+  bucket_name             = var.bucket_name
+  cos_instance_id         = var.cos_instance_id
+  cos_region              = var.cos_region
 }

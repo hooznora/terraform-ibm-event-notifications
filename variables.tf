@@ -12,6 +12,30 @@ variable "name" {
   description = "The name to give the IBM Event Notification instance created by this module."
 }
 
+variable "destination_name" {
+  type        = string
+  description = "The Destintion name."
+  default     = null
+}
+
+variable "bucket_name" {
+  type        = string
+  description = "The bucket name in IBM cloud object storage instance."
+  default     = null
+}
+
+variable "cos_instance_id" {
+  type        = string
+  description = "The instance id for IBM Cloud object storage instance."
+  default     = null
+}
+
+variable "cos_region" {
+  type        = string
+  description = "The bucket region."
+  default     = null
+}
+
 variable "plan" {
   type        = string
   description = "Plan for the event notification instance : lite or standard"
@@ -68,13 +92,25 @@ variable "cbr_rules" {
   default     = []
 }
 
-variable "skip_iam_authorization_policy" {
+variable "skip_en_kms_auth_policy" {
   type        = bool
   description = "Set to true to skip the creation of an IAM authorization policy that permits all Event Notification instances in the resource group to read the encryption key from the KMS instance. No policy is created if var.kms_encryption_enabled is set to false."
   default     = false
 }
 
 variable "kms_encryption_enabled" {
+  type        = bool
+  description = "Set this to true to control the encryption keys used to encrypt the data that you store in Event Notification. If set to false, the data is encrypted by using randomly generated keys. For more info on Managing Encryption, see https://cloud.ibm.com/docs/event-notifications?topic=event-notifications-en-managing-encryption"
+  default     = false
+}
+
+variable "skip_en_cos_auth_policy" {
+  type        = bool
+  description = "Set to true to skip the creation of an IAM authorization policy that permits all Event Notification instances in the resource group to read the encryption key from the KMS instance. No policy is created if var.kms_encryption_enabled is set to false."
+  default     = false
+}
+
+variable "cos_integration_enabled" {
   type        = bool
   description = "Set this to true to control the encryption keys used to encrypt the data that you store in Event Notification. If set to false, the data is encrypted by using randomly generated keys. For more info on Managing Encryption, see https://cloud.ibm.com/docs/event-notifications?topic=event-notifications-en-managing-encryption"
   default     = false
