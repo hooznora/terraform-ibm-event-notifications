@@ -79,4 +79,5 @@ module "event_notifications" {
   bucket_name             = var.bucket_name
   cos_instance_id         = var.cos_instance_id
   cos_region              = var.cos_region
+  skip_en_cos_auth_policy = var.skip_en_cos_auth_policy
 }

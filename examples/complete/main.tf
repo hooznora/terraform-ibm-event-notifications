@@ -102,11 +102,13 @@ module "event_notification" {
   service_endpoints         = "public"
   service_credential_names  = var.service_credential_names
   region                    = var.region
-  cos_integration_enabled   = true
-  destination_name          = module.cos.cos_instance_name
-  bucket_name               = module.cos.bucket_name
-  cos_instance_id           = module.cos.cos_instance_guid
-  cos_region                = var.region
+  # COS Related
+  cos_integration_enabled = true
+  destination_name        = module.cos.cos_instance_name
+  bucket_name             = module.cos.bucket_name
+  cos_instance_id         = module.cos.cos_instance_guid
+  cos_region              = var.region
+
   cbr_rules = [
     {
       description      = "${var.prefix}-event notification access only from vpc"
