@@ -35,14 +35,15 @@ resource "ibm_resource_instance" "en_instance" {
 #############################################################################
 
 resource "ibm_en_destination_cos" "cos_en_destination" {
+  depends_on    = [time_sleep.wait_for_cos_authorization_policy]
   count         = var.cos_integration_enabled ? 1 : 0
   instance_guid = ibm_resource_instance.en_instance.guid
-  name          = var.destination_name
+  name          = var.cos_destination_name
   type          = "ibmcos"
-  description   = "IBM Cloud Object Storage Destination for event notification"
+  description   = "IBM Cloud Object Storage Destination for collection of failed events."
   config {
     params {
-      bucket_name = var.bucket_name
+      bucket_name = var.cos_bucket_name
       instance_id = var.cos_instance_id
       endpoint    = "https://s3.${var.cos_region}.cloud-object-storage.appdomain.cloud"
     }
@@ -63,6 +64,7 @@ data "ibm_en_integrations" "en_integrations" {
 }
 
 resource "ibm_en_integration" "en_kms_integration" {
+  depends_on     = [time_sleep.wait_for_kms_authorization_policy]
   count          = var.kms_encryption_enabled == false ? 0 : 1
   instance_guid  = ibm_resource_instance.en_instance.guid
   integration_id = local.en_integration_id
@@ -93,6 +95,7 @@ resource "ibm_iam_authorization_policy" "cos_policy" {
   description                 = "To collect the events which failed delivery for your Event Notification instance ${ibm_resource_instance.en_instance.guid}."
 }
 
+# workaround for https://github.com/IBM-Cloud/terraform-provider-ibm/issues/4478
 resource "time_sleep" "wait_for_cos_authorization_policy" {
   depends_on = [ibm_iam_authorization_policy.cos_policy]
 

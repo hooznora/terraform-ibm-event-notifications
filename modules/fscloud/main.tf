@@ -14,9 +14,9 @@ module "event_notification" {
   region                    = var.region
   service_credential_names  = var.service_credential_names
   # COS Related
-  cos_integration_enabled = var.cos_integration_enabled
-  destination_name        = var.destination_name
-  bucket_name             = var.bucket_name
+  cos_integration_enabled = true
+  cos_destination_name    = var.cos_destination_name
+  cos_bucket_name         = var.cos_bucket_name
   cos_instance_id         = var.cos_instance_id
   cos_region              = var.cos_region
   skip_en_cos_auth_policy = var.skip_en_cos_auth_policy

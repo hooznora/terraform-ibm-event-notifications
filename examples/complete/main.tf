@@ -104,8 +104,8 @@ module "event_notification" {
   region                    = var.region
   # COS Related
   cos_integration_enabled = true
-  destination_name        = module.cos.cos_instance_name
-  bucket_name             = module.cos.bucket_name
+  cos_destination_name    = module.cos.cos_instance_name
+  cos_bucket_name         = module.cos.bucket_name
   cos_instance_id         = module.cos.cos_instance_guid
   cos_region              = var.region
 

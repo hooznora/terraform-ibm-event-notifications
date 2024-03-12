@@ -50,6 +50,18 @@ module "cbr_zone" {
   }]
 }
 
+module "cos" {
+  source                 = "terraform-ibm-modules/cos/ibm"
+  version                = "7.5.0"
+  resource_group_id      = module.resource_group.resource_group_id
+  region                 = var.region
+  cos_instance_name      = "${var.prefix}-cos"
+  cos_tags               = var.resource_tags
+  bucket_name            = "${var.prefix}-bucket"
+  retention_enabled      = false # disable retention for test environments - enable for stage/prod
+  kms_encryption_enabled = false
+}
+
 module "event_notification" {
   source                    = "../../modules/fscloud"
   resource_group_id         = module.resource_group.resource_group_id
@@ -73,6 +85,12 @@ module "event_notification" {
     "en_custom_email_status_reporter" : "Custom Email Status Reporter",
   }
   region = var.region
+  # COS Related
+  cos_destination_name    = module.cos.cos_instance_name
+  cos_bucket_name         = module.cos.bucket_name
+  cos_instance_id         = module.cos.cos_instance_guid
+  cos_region              = var.region
+  skip_en_cos_auth_policy = false
   cbr_rules = [
     {
       description      = "${var.prefix}-event notification access only from vpc"

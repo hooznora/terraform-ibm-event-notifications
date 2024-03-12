@@ -131,34 +131,25 @@ variable "skip_en_kms_auth_policy" {
 # COS
 ########################################################################################################################
 
-variable "destination_name" {
+variable "cos_destination_name" {
   type        = string
-  description = "The Destintion name."
-  default     = null
+  description = "The name to give the IBM Cloud Object Storage destination which will be created for storage of failed delivery events."
+  default     = "COS Destination"
 }
 
-variable "bucket_name" {
+variable "cos_bucket_name" {
   type        = string
-  description = "The bucket name in IBM cloud object storage instance."
-  default     = null
+  description = "The name of an existing IBM Cloud Object Storage bucket which will be used for storage of failed delivery events."
 }
 
 variable "cos_instance_id" {
   type        = string
-  description = "The instance id for IBM Cloud object storage instance."
-  default     = null
+  description = "The ID of the IBM Cloud Object Storage instance in which the bucket defined in the cos_bucket_name variable exists."
 }
 
 variable "cos_region" {
   type        = string
   description = "The bucket region."
-  default     = null
-}
-
-variable "cos_integration_enabled" {
-  type        = bool
-  description = "Set this to true to connect a Cloud Object Storage Services instance to your Event Notifications instance to collect the events which failed delivery. If set to false, no failed events will be captured by your cos instance."
-  default     = false
 }
 
 variable "skip_en_cos_auth_policy" {
