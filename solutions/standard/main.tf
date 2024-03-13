@@ -17,20 +17,20 @@ locals {
   en_kms_key_id    = var.existing_kms_root_key_id != null ? var.existing_kms_root_key_id : module.kms[0].keys[format("%s.%s", var.en_key_ring_name, var.en_key_name)].key_id
   kms_instance_crn = var.existing_kms_instance_crn != null ? var.existing_kms_instance_crn : module.kms[0].key_protect_id
   kms_endpoint_url = var.kms_endpoint_url != null ? var.kms_endpoint_url : module.kms[0].kp_private_endpoint
+  existing_kms_instance_guid = var.existing_kms_instance_crn != null ? element(split(":", var.existing_kms_instance_crn), length(split(":", var.existing_kms_instance_crn)) - 3) : module.kms[0].key_protect_guid
 }
 
-# KMS root key for Event Notifications
+# KMS root key for COS bucket
 module "kms" {
   providers = {
     ibm = ibm.kms
   }
-  count                       = var.existing_kms_root_key_id != null ? 0 : 1 # no need to create any KMS resources if passing an existing key
+  count                       = var.existing_kms_root_key_id != null || var.existing_cos_bucket_name != null ? 0 : 1 # no need to create any KMS resources if passing an existing key, or bucket
   source                      = "terraform-ibm-modules/kms-all-inclusive/ibm"
   version                     = "4.8.3"
-  resource_group_id           = null # rg only needed if creating KP instance
   create_key_protect_instance = false
   region                      = var.kms_region
-  existing_kms_instance_guid  = var.existing_kms_instance_crn
+  existing_kms_instance_guid  = local.existing_kms_instance_guid
   key_ring_endpoint_type      = var.kms_endpoint_type
   key_endpoint_type           = var.kms_endpoint_type
   keys = [
@@ -56,9 +56,10 @@ module "kms" {
 #######################################################################################################################
 
 locals {
-  cos_kms_key_crn  = var.existing_cos_bucket_name != null ? null : var.existing_kms_root_key_id != null ? var.existing_kms_root_key_id : module.kms[0].keys[format("%s.%s", var.en_key_ring_name, var.en_key_name)].crn
-  cos_instance_crn = var.existing_cos_instance_crn != null ? var.existing_cos_instance_crn : module.cos[0].cos_instance_crn
-  cos_bucket_name  = var.existing_cos_bucket_name != null ? var.existing_cos_bucket_name : module.cos[0].buckets[var.cos_bucket_name].bucket_name
+  cos_kms_key_crn = var.existing_cos_bucket_name != null ? null : var.existing_kms_root_key_id != null ? var.existing_kms_root_key_id : module.kms[0].keys[format("%s.%s", var.en_key_ring_name, var.en_key_name)].crn
+  cos_instance_crn    = var.existing_cos_instance_crn != null ? var.existing_cos_instance_crn : module.cos[0].cos_instance_crn
+  cos_instance_guid   = var.existing_cos_instance_crn != null ? element(split(":", var.existing_cos_instance_crn), length(split(":", var.existing_cos_instance_crn)) - 3) : module.cos[0].cos_instance_guid
+  cos_bucket_name     = var.existing_cos_bucket_name != null ? var.existing_cos_bucket_name : module.cos[0].buckets[var.cos_bucket_name].bucket_name
 
   activity_tracking = var.existing_activity_tracker_crn != null ? {
     read_data_events     = true
@@ -93,8 +94,9 @@ module "cos" {
     add_bucket_name_suffix        = var.add_bucket_name_suffix
     bucket_name                   = var.cos_bucket_name
     kms_encryption_enabled        = true
-    kms_guid                      = var.existing_kms_instance_crn
+    kms_guid                      = local.existing_kms_instance_guid
     kms_key_crn                   = local.cos_kms_key_crn
+    # ?
     skip_iam_authorization_policy = var.skip_cos_kms_auth_policy
     management_endpoint_type      = var.management_endpoint_type_for_bucket
     storage_class                 = var.cos_bucket_class
@@ -129,7 +131,7 @@ module "event_notifications" {
   cos_integration_enabled = true
   cos_destination_name    = var.cos_destination_name
   cos_bucket_name         = local.cos_bucket_name
-  cos_instance_id         = local.cos_instance_crn
+  cos_instance_id         = local.cos_instance_guid
   cos_region              = var.cos_region
   skip_en_cos_auth_policy = var.skip_en_cos_auth_policy
 }
