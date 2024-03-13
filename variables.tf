@@ -15,7 +15,7 @@ variable "name" {
 variable "cos_destination_name" {
   type        = string
   description = "The name to give the IBM Cloud Object Storage destination which will be created for storage of failed delivery events."
-  default     = null
+  default     = "COS Destination"
 }
 
 variable "cos_bucket_name" {
