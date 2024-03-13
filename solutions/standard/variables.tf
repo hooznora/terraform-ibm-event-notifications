@@ -87,6 +87,7 @@ variable "tags" {
 variable "existing_kms_instance_crn" {
   type        = string
   description = "The CRN of the Hyper Protect Crypto Services or Key Protect instance."
+  default     = null
 }
 
 variable "existing_kms_root_key_id" {
@@ -98,6 +99,7 @@ variable "existing_kms_root_key_id" {
 variable "kms_endpoint_url" {
   type        = string
   description = "The KMS endpoint URL to use when configuring KMS encryption. HPCS endpoint URL format- https://api.private.<REGION>.hs-crypto.cloud.ibm.com:<port> and KP endpoint URL format- https://<REGION>.kms.cloud.ibm.com. Only required if not passing existing key."
+  default     = null
 }
 
 variable "kms_region" {

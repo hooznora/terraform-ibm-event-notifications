@@ -14,6 +14,7 @@ A module to create IBM Cloud Event Notifications.
     * [fscloud](./modules/fscloud)
 * [Examples](./examples)
     * [ Financial Services Cloud profile example](./examples/fscloud)
+    * [ Financial Services Cloud profile example](./examples/standard-solution)
     * [Basic example](./examples/basic)
     * [Complete example with BYOK encryption and CBR rules](./examples/complete)
 * [Contributing](#contributing)
