@@ -11,13 +11,6 @@ module "resource_group" {
 }
 
 ##############################################################################
-# Get Cloud Account ID
-##############################################################################
-
-data "ibm_iam_account_settings" "iam_account_settings" {
-}
-
-##############################################################################
 # Create KMS Instance
 ##############################################################################
 
@@ -49,12 +42,12 @@ module "kms" {
 ##############################################################################
 
 module "event_notification" {
-  source                    = "../../solutions/standard"
-  resource_group_name         = module.resource_group.resource_group_name
-  event_notification_name                      = "${var.prefix}-en-da"
-  kms_endpoint_url          = module.kms.kp_private_endpoint
-  tags                      = var.resource_tags
-  ibmcloud_api_key          = var.ibmcloud_api_key
+  source                  = "../../solutions/standard"
+  resource_group_name     = module.resource_group.resource_group_name
+  event_notification_name = "${var.prefix}-en-da"
+  kms_endpoint_url        = module.kms.kp_private_endpoint
+  tags                    = var.resource_tags
+  ibmcloud_api_key        = var.ibmcloud_api_key
 
   # Map of name, role for service credentials that you want to create for the event notification
   service_credential_names = {
@@ -71,7 +64,7 @@ module "event_notification" {
   }
   region = var.region
   # KMS Related
-  kms_region = var.region
+  kms_region                = var.region
   existing_kms_instance_crn = module.kms.key_protect_id
   # COS Related
   cos_region              = var.region
