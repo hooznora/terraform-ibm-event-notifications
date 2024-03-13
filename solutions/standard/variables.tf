@@ -147,16 +147,20 @@ variable "cos_destination_name" {
 variable "cos_bucket_name" {
   type        = string
   description = "The name of an existing IBM Cloud Object Storage bucket which will be used for storage of failed delivery events."
+  default     = "base-event-notifications-bucket"
 }
 
 variable "cos_instance_id" {
   type        = string
   description = "The ID of the IBM Cloud Object Storage instance in which the bucket defined in the cos_bucket_name variable exists."
+  nullable    = true
+  default     = null
 }
 
 variable "cos_region" {
   type        = string
   description = "The region in which the cos bucket is located."
+  default     = "us-south"
 }
 
 variable "skip_en_cos_auth_policy" {
