@@ -34,6 +34,10 @@ resource "ibm_resource_instance" "en_instance" {
 # Event Notification COS integration
 #############################################################################
 
+locals {
+  cos_endpoint = var.cos_endpoint_type == "private" ? "https://s3.private.${var.cos_region}.cloud-object-storage.appdomain.cloud" : "https://s3.${var.cos_region}.cloud-object-storage.appdomain.cloud"
+}
+
 resource "ibm_en_destination_cos" "cos_en_destination" {
   depends_on    = [time_sleep.wait_for_cos_authorization_policy]
   count         = var.cos_integration_enabled ? 1 : 0
@@ -45,7 +49,7 @@ resource "ibm_en_destination_cos" "cos_en_destination" {
     params {
       bucket_name = var.cos_bucket_name
       instance_id = var.cos_instance_id
-      endpoint    = "https://s3.${var.cos_region}.cloud-object-storage.appdomain.cloud"
+      endpoint    = local.cos_endpoint
     }
   }
 }
@@ -92,7 +96,7 @@ resource "ibm_iam_authorization_policy" "cos_policy" {
   target_service_name         = "cloud-object-storage"
   target_resource_instance_id = var.cos_instance_id
   roles                       = ["Reader"]
-  description                 = "To collect the events which failed delivery for your Event Notification instance ${ibm_resource_instance.en_instance.guid}."
+  description                 = "Allow EN instance with GUID ${ibm_resource_instance.en_instance.guid} read access to the COS instance with ID ${var.cos_instance_id}."
 }
 
 # workaround for https://github.com/IBM-Cloud/terraform-provider-ibm/issues/4478

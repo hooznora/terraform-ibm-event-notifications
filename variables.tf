@@ -32,7 +32,13 @@ variable "cos_instance_id" {
 
 variable "cos_region" {
   type        = string
-  description = "The bucket region."
+  description = "The region in which the cos bucket is located."
+  default     = null
+}
+
+variable "cos_endpoint_type" {
+  type        = string
+  description = "Whether you want to have the private or public endpoint for your bucket."
   default     = null
 }
 

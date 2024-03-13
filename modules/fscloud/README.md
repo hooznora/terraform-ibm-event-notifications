@@ -77,7 +77,7 @@ No resources.
 | <a name="input_cos_bucket_name"></a> [cos\_bucket\_name](#input\_cos\_bucket\_name) | The name of an existing IBM Cloud Object Storage bucket which will be used for storage of failed delivery events. | `string` | n/a | yes |
 | <a name="input_cos_destination_name"></a> [cos\_destination\_name](#input\_cos\_destination\_name) | The name to give the IBM Cloud Object Storage destination which will be created for storage of failed delivery events. | `string` | `"COS Destination"` | no |
 | <a name="input_cos_instance_id"></a> [cos\_instance\_id](#input\_cos\_instance\_id) | The ID of the IBM Cloud Object Storage instance in which the bucket defined in the cos\_bucket\_name variable exists. | `string` | n/a | yes |
-| <a name="input_cos_region"></a> [cos\_region](#input\_cos\_region) | The bucket region. | `string` | n/a | yes |
+| <a name="input_cos_region"></a> [cos\_region](#input\_cos\_region) | The region in which the cos bucket is located. | `string` | n/a | yes |
 | <a name="input_existing_kms_instance_crn"></a> [existing\_kms\_instance\_crn](#input\_existing\_kms\_instance\_crn) | The CRN of the Hyper Protect Crypto Services or Key Protect instance. To ensure compliance with FSCloud standards, it is required to use HPCS only. | `string` | n/a | yes |
 | <a name="input_kms_endpoint_url"></a> [kms\_endpoint\_url](#input\_kms\_endpoint\_url) | The KMS endpoint URL to use when configuring KMS encryption. | `string` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | The name to give the IBM Event Notification instance created by this module. | `string` | n/a | yes |

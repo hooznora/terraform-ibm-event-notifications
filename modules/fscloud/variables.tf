@@ -88,7 +88,7 @@ variable "cos_instance_id" {
 
 variable "cos_region" {
   type        = string
-  description = "The bucket region."
+  description = "The region in which the cos bucket is located."
 }
 
 variable "skip_en_cos_auth_policy" {

@@ -49,6 +49,61 @@ module "kms" {
   ]
 }
 
+#######################################################################################################################
+# COS
+#######################################################################################################################
+
+locals {
+  cos_kms_key_crn  = var.existing_cos_bucket_name != null ? null : var.existing_kms_root_key_id != null ? var.existing_kms_root_key_id : module.kms[0].keys[format("%s.%s", var.en_key_ring_name, var.en_key_name)].crn
+  cos_instance_crn = var.existing_cos_instance_crn != null ? var.existing_cos_instance_crn : module.cos[0].cos_instance_crn
+  cos_bucket_name  = var.existing_cos_bucket_name != null ? var.existing_cos_bucket_name : module.cos[0].buckets[var.cos_bucket_name].bucket_name
+
+  activity_tracking = var.existing_activity_tracker_crn != null ? {
+    read_data_events     = true
+    write_data_events    = true
+    activity_tracker_crn = var.existing_activity_tracker_crn
+  } : null
+
+  metrics_monitoring = var.existing_monitoring_crn != null ? {
+    usage_metrics_enabled   = true
+    request_metrics_enabled = true
+    metrics_monitoring_crn  = var.existing_monitoring_crn
+  } : null
+}
+
+module "cos" {
+  providers = {
+    ibm = ibm.cos
+  }
+  count                    = var.existing_cos_bucket_name == null ? 1 : 0 # no need to call COS module if consumer is passing existing COS bucket
+  source                   = "terraform-ibm-modules/cos/ibm//modules/fscloud"
+  version                  = "7.5.0"
+  resource_group_id        = module.resource_group.resource_group_id
+  create_cos_instance      = var.existing_cos_instance_crn == null ? true : false # don't create instance if existing one passed in
+  create_resource_key      = false
+  cos_instance_name        = var.cos_instance_name
+  cos_tags                 = var.cos_instance_tags
+  existing_cos_instance_id = var.existing_cos_instance_crn
+  access_tags              = var.cos_instance_access_tags
+  cos_plan                 = "standard"
+  bucket_configs = [{
+    access_tags                   = var.cos_bucket_access_tags
+    add_bucket_name_suffix        = var.add_bucket_name_suffix
+    bucket_name                   = var.cos_bucket_name
+    kms_encryption_enabled        = true
+    kms_guid                      = var.existing_kms_instance_crn
+    kms_key_crn                   = local.cos_kms_key_crn
+    skip_iam_authorization_policy = var.skip_cos_kms_auth_policy
+    management_endpoint_type      = var.management_endpoint_type_for_bucket
+    storage_class                 = var.cos_bucket_class
+    resource_instance_id          = local.cos_instance_crn
+    region_location               = var.cos_region
+    force_delete                  = true
+    activity_tracking             = local.activity_tracking
+    metrics_monitoring            = local.metrics_monitoring
+  }]
+}
+
 ########################################################################################################################
 # Event Notifications
 ########################################################################################################################
@@ -76,7 +131,7 @@ module "event_notifications" {
   # COS Related
   cos_integration_enabled = true
   cos_destination_name    = var.cos_destination_name
-  cos_bucket_name         = var.cos_bucket_name
+  cos_bucket_name         = local.cos_bucket_name
   cos_instance_id         = var.cos_instance_id
   cos_region              = var.cos_region
   skip_en_cos_auth_policy = var.skip_en_cos_auth_policy
