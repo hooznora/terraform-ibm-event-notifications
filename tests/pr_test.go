@@ -104,29 +104,6 @@ func TestRunFSCloudExample(t *testing.T) {
 	assert.NotNil(t, output, "Expected some output")
 }
 
-func TestRunDAExample(t *testing.T) {
-	t.Parallel()
-
-	options := setupOptions(t, "scc-da", fsExampleDir)
-
-	options = testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
-		Testing:       t,
-		TerraformDir:  daDir,
-		Prefix:        "scc-da",
-		ResourceGroup: resourceGroup,
-		Region:        options.Region,
-		TerraformVars: map[string]interface{}{
-			"existing_kms_instance_crn": permanentResources["hpcs_south_crn"],
-			"root_key_id":               permanentResources["hpcs_south_root_key_id"],
-			"kms_endpoint_url":          permanentResources["hpcs_south_private_endpoint"],
-		},
-	})
-
-	output, err := options.RunTestConsistency()
-	assert.Nil(t, err, "This should not have errored")
-	assert.NotNil(t, output, "Expected some output")
-}
-
 func TestDAInSchematics(t *testing.T) {
 	t.Parallel()
 
