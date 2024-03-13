@@ -14,13 +14,13 @@ module "resource_group" {
 #######################################################################################################################
 
 locals {
-  en_kms_key_id    = var.existing_kms_root_key_id != null ? var.existing_kms_root_key_id : module.kms[0].keys[format("%s.%s", var.en_key_ring_name, var.en_key_name)].key_id
-  kms_instance_crn = var.existing_kms_instance_crn != null ? var.existing_kms_instance_crn : module.kms[0].key_protect_id
-  kms_endpoint_url = var.kms_endpoint_url != null ? var.kms_endpoint_url : module.kms[0].kp_private_endpoint
+  en_kms_key_id              = var.existing_kms_root_key_id != null ? var.existing_kms_root_key_id : module.kms[0].keys[format("%s.%s", var.en_key_ring_name, var.en_key_name)].key_id
+  kms_instance_crn           = var.existing_kms_instance_crn != null ? var.existing_kms_instance_crn : module.kms[0].key_protect_id
+  kms_endpoint_url           = var.kms_endpoint_url != null ? var.kms_endpoint_url : module.kms[0].kp_private_endpoint
   existing_kms_instance_guid = var.existing_kms_instance_crn != null ? element(split(":", var.existing_kms_instance_crn), length(split(":", var.existing_kms_instance_crn)) - 3) : module.kms[0].key_protect_guid
 }
 
-# KMS root key for COS bucket
+# KMS root key for Event Notifications
 module "kms" {
   providers = {
     ibm = ibm.kms
@@ -29,6 +29,7 @@ module "kms" {
   source                      = "terraform-ibm-modules/kms-all-inclusive/ibm"
   version                     = "4.8.3"
   create_key_protect_instance = false
+  resource_group_id           = null # rg only needed if creating KP instance
   region                      = var.kms_region
   existing_kms_instance_guid  = local.existing_kms_instance_guid
   key_ring_endpoint_type      = var.kms_endpoint_type
@@ -56,10 +57,10 @@ module "kms" {
 #######################################################################################################################
 
 locals {
-  cos_kms_key_crn = var.existing_cos_bucket_name != null ? null : var.existing_kms_root_key_id != null ? var.existing_kms_root_key_id : module.kms[0].keys[format("%s.%s", var.en_key_ring_name, var.en_key_name)].crn
-  cos_instance_crn    = var.existing_cos_instance_crn != null ? var.existing_cos_instance_crn : module.cos[0].cos_instance_crn
-  cos_instance_guid   = var.existing_cos_instance_crn != null ? element(split(":", var.existing_cos_instance_crn), length(split(":", var.existing_cos_instance_crn)) - 3) : module.cos[0].cos_instance_guid
-  cos_bucket_name     = var.existing_cos_bucket_name != null ? var.existing_cos_bucket_name : module.cos[0].buckets[var.cos_bucket_name].bucket_name
+  cos_kms_key_crn   = var.existing_cos_bucket_name != null ? null : var.existing_kms_root_key_id != null ? var.existing_kms_root_key_id : module.kms[0].keys[format("%s.%s", var.en_key_ring_name, var.en_key_name)].crn
+  cos_instance_crn  = var.existing_cos_instance_crn != null ? var.existing_cos_instance_crn : module.cos[0].cos_instance_crn
+  cos_instance_guid = var.existing_cos_instance_crn != null ? element(split(":", var.existing_cos_instance_crn), length(split(":", var.existing_cos_instance_crn)) - 3) : module.cos[0].cos_instance_guid
+  cos_bucket_name   = var.existing_cos_bucket_name != null ? var.existing_cos_bucket_name : module.cos[0].buckets[var.cos_bucket_name].bucket_name
 
   activity_tracking = var.existing_activity_tracker_crn != null ? {
     read_data_events     = true
@@ -90,12 +91,12 @@ module "cos" {
   access_tags              = var.cos_instance_access_tags
   cos_plan                 = "standard"
   bucket_configs = [{
-    access_tags                   = var.cos_bucket_access_tags
-    add_bucket_name_suffix        = var.add_bucket_name_suffix
-    bucket_name                   = var.cos_bucket_name
-    kms_encryption_enabled        = true
-    kms_guid                      = local.existing_kms_instance_guid
-    kms_key_crn                   = local.cos_kms_key_crn
+    access_tags            = var.cos_bucket_access_tags
+    add_bucket_name_suffix = var.add_bucket_name_suffix
+    bucket_name            = var.cos_bucket_name
+    kms_encryption_enabled = true
+    kms_guid               = local.existing_kms_instance_guid
+    kms_key_crn            = local.cos_kms_key_crn
     # ?
     skip_iam_authorization_policy = var.skip_cos_kms_auth_policy
     management_endpoint_type      = var.management_endpoint_type_for_bucket
