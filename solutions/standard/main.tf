@@ -28,7 +28,6 @@ module "kms" {
   count                       = var.existing_kms_root_key_id != null || var.existing_cos_bucket_name != null ? 0 : 1 # no need to create any KMS resources if passing an existing key, or bucket
   source                      = "terraform-ibm-modules/kms-all-inclusive/ibm"
   version                     = "4.8.4"
-  resource_group_id           = null # rg only needed if creating KP instance
   create_key_protect_instance = false
   resource_group_id           = null # rg only needed if creating KP instance
   region                      = var.kms_region
