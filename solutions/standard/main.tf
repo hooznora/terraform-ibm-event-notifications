@@ -29,7 +29,6 @@ module "kms" {
   source                      = "terraform-ibm-modules/kms-all-inclusive/ibm"
   version                     = "4.8.4"
   create_key_protect_instance = false
-  resource_group_id           = null # rg only needed if creating KP instance
   region                      = var.kms_region
   existing_kms_instance_guid  = local.existing_kms_instance_guid
   key_ring_endpoint_type      = var.kms_endpoint_type
@@ -91,13 +90,12 @@ module "cos" {
   access_tags              = var.cos_instance_access_tags
   cos_plan                 = "standard"
   bucket_configs = [{
-    access_tags            = var.cos_bucket_access_tags
-    add_bucket_name_suffix = var.add_bucket_name_suffix
-    bucket_name            = var.cos_bucket_name
-    kms_encryption_enabled = true
-    kms_guid               = local.existing_kms_instance_guid
-    kms_key_crn            = local.cos_kms_key_crn
-    # ?
+    access_tags                   = var.cos_bucket_access_tags
+    add_bucket_name_suffix        = var.add_bucket_name_suffix
+    bucket_name                   = var.cos_bucket_name
+    kms_encryption_enabled        = true
+    kms_guid                      = local.existing_kms_instance_guid
+    kms_key_crn                   = local.cos_kms_key_crn
     skip_iam_authorization_policy = var.skip_cos_kms_auth_policy
     management_endpoint_type      = var.management_endpoint_type_for_bucket
     storage_class                 = var.cos_bucket_class
@@ -135,4 +133,5 @@ module "event_notifications" {
   cos_instance_id         = local.cos_instance_guid
   cos_region              = var.cos_region
   skip_en_cos_auth_policy = var.skip_en_cos_auth_policy
+  cos_endpoint            = var.cos_endpoint
 }

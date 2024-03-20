@@ -125,8 +125,7 @@ func TestDAInSchematics(t *testing.T) {
 
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
-		{Name: "resource_group_name", Value: options.ResourceGroup, DataType: "string"},
-		{Name: "existing_resource_group", Value: true, DataType: "bool"},
+		{Name: "resource_group_name", Value: options.Prefix, DataType: "string"},
 		{Name: "region", Value: region, DataType: "string"},
 		{Name: "existing_kms_instance_crn", Value: permanentResources["hpcs_south_crn"], DataType: "string"},
 		{Name: "kms_region", Value: "us-south", DataType: "string"}, // KMS instance is in us-south

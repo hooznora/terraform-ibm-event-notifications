@@ -36,10 +36,6 @@ resource "ibm_resource_instance" "en_instance" {
 # Event Notification COS integration
 #############################################################################
 
-locals {
-  cos_endpoint = var.cos_endpoint_type == "private" ? "https://s3.private.${var.cos_region}.cloud-object-storage.appdomain.cloud" : "https://s3.${var.cos_region}.cloud-object-storage.appdomain.cloud"
-}
-
 resource "ibm_en_destination_cos" "cos_en_destination" {
   depends_on    = [time_sleep.wait_for_cos_authorization_policy]
   count         = var.cos_integration_enabled ? 1 : 0
@@ -51,7 +47,7 @@ resource "ibm_en_destination_cos" "cos_en_destination" {
     params {
       bucket_name = var.cos_bucket_name
       instance_id = var.cos_instance_id
-      endpoint    = local.cos_endpoint
+      endpoint    = var.cos_endpoint
     }
   }
 }
@@ -90,14 +86,14 @@ locals {
   existing_kms_instance_guid = var.kms_encryption_enabled == true ? element(split(":", var.existing_kms_instance_crn), length(split(":", var.existing_kms_instance_crn)) - 3) : null
 }
 
-# Create IAM Authorization Policies to allow event notification to access kms for the encryption key
+# Create IAM Authorization Policies to allow event notification to access cos
 resource "ibm_iam_authorization_policy" "cos_policy" {
   count                       = var.cos_integration_enabled == false || var.skip_en_cos_auth_policy ? 0 : 1
   source_service_name         = "event-notifications"
   source_resource_instance_id = ibm_resource_instance.en_instance.guid
   target_service_name         = "cloud-object-storage"
   target_resource_instance_id = var.cos_instance_id
-  roles                       = ["Reader"]
+  roles                       = ["Object Writer"]
   description                 = "Allow EN instance with GUID ${ibm_resource_instance.en_instance.guid} read access to the COS instance with ID ${var.cos_instance_id}."
 }
 

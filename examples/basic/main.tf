@@ -14,6 +14,10 @@ module "resource_group" {
 # Events-notification-instance
 ##############################################################################
 
+locals {
+  cos_endpoint = "https://s3.${var.region}.cloud-object-storage.appdomain.cloud"
+}
+
 module "event_notification" {
   source                  = "../../"
   resource_group_id       = module.resource_group.resource_group_id
@@ -23,4 +27,5 @@ module "event_notification" {
   service_endpoints       = "public"
   region                  = var.region
   cos_integration_enabled = false
+  cos_endpoint            = local.cos_endpoint
 }

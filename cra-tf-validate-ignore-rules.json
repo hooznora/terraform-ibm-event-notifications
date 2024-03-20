@@ -3,7 +3,7 @@
         {
             "scc_rule_id": "rule-8cbd597c-7471-42bd-9c88-36b2696456e9",
             "description": "Check whether Cloud Object Storage network access is restricted to a specific IP range",
-            "ignore_reason": "CBR to be implemented: https://github.com/terraform-ibm-modules/terraform-ibm-scc-da/issues/7",
+            "ignore_reason": "Tracked at https://github.com/terraform-ibm-modules/terraform-ibm-event-notifications/issues/161",
             "is_valid": true
         }
     ]

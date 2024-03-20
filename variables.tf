@@ -36,14 +36,9 @@ variable "cos_region" {
   default     = "us-south"
 }
 
-variable "cos_endpoint_type" {
+variable "cos_endpoint" {
   type        = string
-  description = "Whether you want to have the private or public endpoint for your bucket."
-  default     = "private"
-  validation {
-    condition     = contains(["public", "private"], var.cos_endpoint_type)
-    error_message = "The specified cos_endpoint_type is not a valid selection!"
-  }
+  description = "The endpoint url for your cos instance."
 }
 
 variable "plan" {

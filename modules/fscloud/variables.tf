@@ -96,3 +96,14 @@ variable "skip_en_cos_auth_policy" {
   description = "Set to true to skip the creation of an IAM authorization policy that permits all Event Notification instances in the resource group to interact with your Cloud Object Storage instance. No policy is created if var.cos_integration_enabled is set to false."
   default     = false
 }
+
+variable "cos_integration_enabled" {
+  type        = bool
+  description = "Set this to true to connect a Cloud Object Storage Services instance to your Event Notifications instance to collect the events which failed delivery. If set to false, no failed events will be captured."
+  default     = true
+}
+
+variable "cos_endpoint" {
+  type        = string
+  description = "The endpoint url for your cos instance."
+}

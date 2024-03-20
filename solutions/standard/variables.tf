@@ -29,7 +29,7 @@ variable "existing_monitoring_crn" {
   type        = string
   nullable    = true
   default     = null
-  description = "(Optional) The CRN of an existing IBM Cloud Monitoring instance. Used to send all COS bucket request and usage metrics to, as well as SCC workload protection data. Ignored if using existing COS bucket and not provisioning SCC workload protection."
+  description = "(Optional) The CRN of an existing IBM Cloud Monitoring instance. Used to monitor the COS bucket used for storing failed events. Ignored if using existing COS bucket and not provisioning SCC workload protection."
 }
 
 ########################################################################################################################
@@ -239,4 +239,9 @@ variable "existing_activity_tracker_crn" {
   nullable    = true
   default     = null
   description = "(Optional) The CRN of an existing Activity Tracker instance. Used to send COS bucket log data and all object write events to Activity Tracker. Only used if not supplying an existing COS bucket."
+}
+
+variable "cos_endpoint" {
+  type        = string
+  description = "The endpoint url for your cos instance."
 }

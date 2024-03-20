@@ -59,7 +59,11 @@ module "cos" {
   cos_tags               = var.resource_tags
   bucket_name            = "${var.prefix}-bucket"
   retention_enabled      = false # disable retention for test environments - enable for stage/prod
-  kms_encryption_enabled = false
+  kms_encryption_enabled = true
+}
+
+locals {
+  cos_endpoint = "https://s3.private.${var.region}.cloud-object-storage.appdomain.cloud"
 }
 
 module "event_notification" {
@@ -91,6 +95,7 @@ module "event_notification" {
   cos_instance_id         = module.cos.cos_instance_guid
   cos_region              = var.region
   skip_en_cos_auth_policy = false
+  cos_endpoint            = local.cos_endpoint
   cbr_rules = [
     {
       description      = "${var.prefix}-event notification access only from vpc"
