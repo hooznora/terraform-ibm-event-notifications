@@ -39,6 +39,7 @@ variable "cos_region" {
 variable "cos_endpoint" {
   type        = string
   description = "The endpoint url for your cos instance."
+  default     = null
 }
 
 variable "plan" {
