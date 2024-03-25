@@ -244,4 +244,5 @@ variable "existing_activity_tracker_crn" {
 variable "cos_endpoint" {
   type        = string
   description = "The endpoint url for your cos instance."
+  default     = null
 }
