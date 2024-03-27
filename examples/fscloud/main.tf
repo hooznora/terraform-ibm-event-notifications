@@ -62,10 +62,6 @@ module "cos" {
   kms_encryption_enabled = true
 }
 
-locals {
-  cos_endpoint = "https://s3.private.${var.region}.cloud-object-storage.appdomain.cloud"
-}
-
 module "event_notification" {
   source                    = "../../modules/fscloud"
   resource_group_id         = module.resource_group.resource_group_id
@@ -95,7 +91,7 @@ module "event_notification" {
   cos_instance_id         = module.cos.cos_instance_guid
   cos_region              = var.region
   skip_en_cos_auth_policy = false
-  cos_endpoint            = local.cos_endpoint
+  cos_endpoint            = module.cos.s3_endpoint_private
   cbr_rules = [
     {
       description      = "${var.prefix}-event notification access only from vpc"

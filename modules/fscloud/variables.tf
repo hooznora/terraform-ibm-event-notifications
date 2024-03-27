@@ -78,17 +78,20 @@ variable "cos_destination_name" {
 
 variable "cos_bucket_name" {
   type        = string
-  description = "The name of an existing IBM Cloud Object Storage bucket which will be used for storage of failed delivery events."
+  description = "The name to use when creating the Cloud Object Storage bucket for storing failed events (NOTE: bucket names are globally unique). If 'add_bucket_name_suffix' is set to true, a random 4 characters will be added to this name to help ensure bucket name is globally unique. Required only if var.cos_integration_enabled is set to true."
+  default     = null
 }
 
 variable "cos_instance_id" {
   type        = string
-  description = "The ID of the IBM Cloud Object Storage instance in which the bucket defined in the cos_bucket_name variable exists."
+  description = "The ID of the IBM Cloud Object Storage instance in which the bucket defined in the cos_bucket_name variable exists. Required only if var.cos_integration_enabled is set to true."
+  default     = null
 }
 
 variable "cos_region" {
   type        = string
-  description = "The region in which the cos bucket is located."
+  description = "The region in which the cos bucket is located. Required only if var.cos_integration_enabled is set to true."
+  default     = null
 }
 
 variable "skip_en_cos_auth_policy" {
@@ -105,5 +108,6 @@ variable "cos_integration_enabled" {
 
 variable "cos_endpoint" {
   type        = string
-  description = "The endpoint url for your cos instance."
+  description = "The endpoint url for your cos instance, for further information refer to the official docs https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-endpoints. Required only if var.cos_integration_enabled is set to true."
+  default     = null
 }

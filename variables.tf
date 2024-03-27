@@ -20,7 +20,7 @@ variable "cos_destination_name" {
 
 variable "cos_bucket_name" {
   type        = string
-  description = "The name of an existing IBM Cloud Object Storage bucket which will be used for storage of failed delivery events."
+  description = "The name to use when creating the Cloud Object Storage bucket for storing failed events (NOTE: bucket names are globally unique). If 'add_bucket_name_suffix' is set to true, a random 4 characters will be added to this name to help ensure bucket name is globally unique."
   default     = null
 }
 
@@ -38,7 +38,7 @@ variable "cos_region" {
 
 variable "cos_endpoint" {
   type        = string
-  description = "The endpoint url for your cos instance."
+  description = "The endpoint url for your cos instance, for further information refer to the official docs https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-endpoints. This will default to the private endpoint if no value is passed. Required only if var.cos_integration_enabled is set to true."
   default     = null
 }
 
@@ -123,7 +123,7 @@ variable "cos_integration_enabled" {
 }
 
 variable "existing_kms_instance_crn" {
-  description = "The CRN of the Hyper Protect Crypto Services or Key Protect instance. Required only if var.kms_encryption_enabled is set to true"
+  description = "The CRN of the Hyper Protect Crypto Services or Key Protect instance. Required only if var.kms_encryption_enabled is set to true."
   type        = string
   default     = null
 }

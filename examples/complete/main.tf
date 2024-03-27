@@ -90,10 +90,6 @@ module "cbr_zone" {
   }]
 }
 
-locals {
-  cos_endpoint = "https://s3.${var.region}.cloud-object-storage.appdomain.cloud"
-}
-
 module "event_notification" {
   source                    = "../../"
   resource_group_id         = module.resource_group.resource_group_id
@@ -112,7 +108,7 @@ module "event_notification" {
   cos_bucket_name         = module.cos.bucket_name
   cos_instance_id         = module.cos.cos_instance_guid
   cos_region              = var.region
-  cos_endpoint            = local.cos_endpoint
+  cos_endpoint            = module.cos.s3_endpoint_private
   cbr_rules = [
     {
       description      = "${var.prefix}-event notification access only from vpc"

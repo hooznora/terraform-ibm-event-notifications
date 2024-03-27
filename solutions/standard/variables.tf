@@ -87,7 +87,6 @@ variable "tags" {
 variable "existing_kms_instance_crn" {
   type        = string
   description = "The CRN of the Hyper Protect Crypto Services or Key Protect instance."
-  default     = null
 }
 
 variable "existing_kms_root_key_id" {
@@ -99,7 +98,6 @@ variable "existing_kms_root_key_id" {
 variable "kms_endpoint_url" {
   type        = string
   description = "The KMS endpoint URL to use when configuring KMS encryption. HPCS endpoint URL format- https://api.private.<REGION>.hs-crypto.cloud.ibm.com:<port> and KP endpoint URL format- https://<REGION>.kms.cloud.ibm.com. Only required if not passing existing key."
-  default     = null
 }
 
 variable "kms_region" {
@@ -148,19 +146,19 @@ variable "cos_destination_name" {
 
 variable "cos_bucket_name" {
   type        = string
-  description = "The name of an existing IBM Cloud Object Storage bucket which will be used for storage of failed delivery events."
+  description = "The name to use when creating the Cloud Object Storage bucket for storing failed events (NOTE: bucket names are globally unique). If 'add_bucket_name_suffix' is set to true, a random 4 characters will be added to this name to help ensure bucket name is globally unique."
   default     = "base-event-notifications-bucket"
 }
 
 variable "cos_region" {
   type        = string
-  description = "The region in which the cos bucket is located."
+  description = "The Cloud Object Storage region."
   default     = "us-south"
 }
 
 variable "skip_en_cos_auth_policy" {
   type        = bool
-  description = "Set to true to skip the creation of an IAM authorization policy that permits all Event Notification instances in the resource group to interact with your Cloud Object Storage instance. No policy is created if var.cos_integration_enabled is set to false."
+  description = "Set to true to skip the creation of an IAM authorization policy that permits all Event Notification instances in the resource group to interact with your Cloud Object Storage instance."
   default     = false
 }
 
@@ -243,6 +241,6 @@ variable "existing_activity_tracker_crn" {
 
 variable "cos_endpoint" {
   type        = string
-  description = "The endpoint url for your cos instance."
+  description = "The endpoint url for your cos instance, for further information refer to the official docs https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-endpoints. Required only if var.cos_integration_enabled is set to true."
   default     = null
 }
