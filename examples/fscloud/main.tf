@@ -50,17 +50,43 @@ module "cbr_zone" {
   }]
 }
 
-module "cos" {
-  source                 = "terraform-ibm-modules/cos/ibm"
-  version                = "7.5.0"
-  resource_group_id      = module.resource_group.resource_group_id
-  region                 = var.region
-  cos_instance_name      = "${var.prefix}-cos"
-  cos_tags               = var.resource_tags
-  bucket_name            = "${var.prefix}-bucket"
-  retention_enabled      = false # disable retention for test environments - enable for stage/prod
-  kms_encryption_enabled = true
+##############################################################################
+# Create COS Instance
+##############################################################################
+
+locals {
+  bucket_name = "${var.prefix}-bucket"
 }
+
+module "cos" {
+  source                   = "terraform-ibm-modules/cos/ibm//modules/fscloud"
+  version                  = "7.5.0"
+  resource_group_id        = module.resource_group.resource_group_id
+  create_cos_instance      = true
+  create_resource_key      = false
+  cos_instance_name        = "${var.prefix}-cos"
+  cos_tags                 = []
+  existing_cos_instance_id = null
+  access_tags              = []
+  cos_plan                 = "standard"
+  bucket_configs = [{
+    access_tags                   = []
+    add_bucket_name_suffix        = true
+    bucket_name                   = local.bucket_name
+    kms_encryption_enabled        = true
+    kms_guid                      = var.root_key_id
+    kms_key_crn                   = var.existing_kms_instance_crn
+    skip_iam_authorization_policy = false
+    management_endpoint_type      = "private"
+    storage_class                 = "smart"
+    region_location               = "us-south"
+    force_delete                  = true
+  }]
+}
+
+##############################################################################
+# Create Event Notifications Instance
+##############################################################################
 
 module "event_notification" {
   source                    = "../../modules/fscloud"
@@ -87,11 +113,11 @@ module "event_notification" {
   region = var.region
   # COS Related
   cos_destination_name    = module.cos.cos_instance_name
-  cos_bucket_name         = module.cos.bucket_name
+  cos_bucket_name         = module.cos.buckets[local.bucket_name].bucket_name
   cos_instance_id         = module.cos.cos_instance_guid
   cos_region              = var.region
   skip_en_cos_auth_policy = false
-  cos_endpoint            = module.cos.s3_endpoint_private
+  cos_endpoint            = module.cos.buckets[local.bucket_name].s3_endpoint_private
   cbr_rules = [
     {
       description      = "${var.prefix}-event notification access only from vpc"
