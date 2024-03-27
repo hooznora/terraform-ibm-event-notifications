@@ -10,7 +10,7 @@ module "resource_group" {
 }
 
 #######################################################################################################################
-# KMS Key
+# KMS Keys
 #######################################################################################################################
 
 locals {
@@ -47,6 +47,20 @@ module "kms" {
           force_delete             = true
         }
       ]
+    },
+    {
+      key_ring_name         = var.cos_key_ring_name
+      existing_key_ring     = false
+      force_delete_key_ring = true
+      keys = [
+        {
+          key_name                 = var.cos_key_name
+          standard_key             = false
+          rotation_interval_month  = 3
+          dual_auth_delete_enabled = false
+          force_delete             = true
+        }
+      ]
     }
   ]
 }
@@ -56,7 +70,7 @@ module "kms" {
 #######################################################################################################################
 
 locals {
-  cos_kms_key_crn   = var.existing_cos_bucket_name != null ? null : var.existing_kms_root_key_id != null ? var.existing_kms_root_key_id : module.kms[0].keys[format("%s.%s", var.en_key_ring_name, var.en_key_name)].crn
+  cos_kms_key_crn   = var.existing_cos_bucket_name != null ? null : var.existing_kms_root_key_id != null ? var.existing_kms_root_key_id : module.kms[0].keys[format("%s.%s", var.cos_key_ring_name, var.cos_key_name)].crn
   cos_instance_crn  = var.existing_cos_instance_crn != null ? var.existing_cos_instance_crn : module.cos[0].cos_instance_crn
   cos_instance_guid = var.existing_cos_instance_crn != null ? element(split(":", var.existing_cos_instance_crn), length(split(":", var.existing_cos_instance_crn)) - 3) : module.cos[0].cos_instance_guid
   cos_bucket_name   = var.existing_cos_bucket_name != null ? var.existing_cos_bucket_name : module.cos[0].buckets[var.cos_bucket_name].bucket_name

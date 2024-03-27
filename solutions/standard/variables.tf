@@ -128,6 +128,18 @@ variable "en_key_name" {
   description = "The name to give the Key which will be created for the Event Notifications. Not used if supplying an existing Key."
 }
 
+variable "cos_key_ring_name" {
+  type        = string
+  default     = "cos-key-ring"
+  description = "The name to give the Key Ring which will be created for COS. Not used if supplying an existing Key."
+}
+
+variable "cos_key_name" {
+  type        = string
+  default     = "cos-key"
+  description = "The name to give the Key which will be created for COS. Not used if supplying an existing Key."
+}
+
 variable "skip_en_kms_auth_policy" {
   type        = bool
   description = "Set to true to skip the creation of an IAM authorization policy that permits all Event Notification instances in the resource group to read the encryption key from the KMS instance."
