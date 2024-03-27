@@ -77,7 +77,7 @@ module "cos" {
     kms_guid                      = var.root_key_id
     kms_key_crn                   = var.existing_kms_instance_crn
     skip_iam_authorization_policy = false
-    management_endpoint_type      = "private"
+    management_endpoint_type      = "public"
     storage_class                 = "smart"
     region_location               = "us-south"
     force_delete                  = true
