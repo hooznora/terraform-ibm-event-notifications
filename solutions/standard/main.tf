@@ -126,7 +126,7 @@ module "cos" {
 ########################################################################################################################
 
 locals {
-  cos_endpoint = var.cos_endpoint == null ? "https://s3.private.${var.region}.cloud-object-storage.appdomain.cloud" : var.cos_endpoint
+  cos_endpoint = var.cos_endpoint == null ? "https://${module.cos[0].buckets[var.cos_bucket_name].s3_endpoint_private}" : var.cos_endpoint
 }
 
 module "event_notifications" {
