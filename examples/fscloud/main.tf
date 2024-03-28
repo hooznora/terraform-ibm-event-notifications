@@ -55,27 +55,26 @@ module "cbr_zone" {
 ##############################################################################
 
 locals {
-  bucket_name = "${var.prefix}-bucket"
+  bucket_name       = "cos-bucket"
+  kms_instance_guid = element(split(":", var.existing_kms_instance_crn), length(split(":", var.existing_kms_instance_crn)) - 3)
+  root_key_id       = element(split(":", var.root_key_crn), length(split(":", var.root_key_crn)) - 1)
 }
 
 module "cos" {
-  source                   = "terraform-ibm-modules/cos/ibm//modules/fscloud"
-  version                  = "7.5.0"
-  resource_group_id        = module.resource_group.resource_group_id
-  create_cos_instance      = true
-  create_resource_key      = false
-  cos_instance_name        = "${var.prefix}-cos"
-  cos_tags                 = []
-  existing_cos_instance_id = null
-  access_tags              = []
-  cos_plan                 = "standard"
+  source              = "terraform-ibm-modules/cos/ibm//modules/fscloud"
+  version             = "7.5.0"
+  resource_group_id   = module.resource_group.resource_group_id
+  create_cos_instance = true
+  create_resource_key = false
+  cos_instance_name   = "${var.prefix}-cos"
+  cos_plan            = "standard"
   bucket_configs = [{
     access_tags                   = []
     add_bucket_name_suffix        = true
     bucket_name                   = local.bucket_name
     kms_encryption_enabled        = true
-    kms_guid                      = var.root_key_id
-    kms_key_crn                   = var.existing_kms_instance_crn
+    kms_guid                      = local.kms_instance_guid
+    kms_key_crn                   = var.root_key_crn
     skip_iam_authorization_policy = false
     management_endpoint_type      = "public"
     storage_class                 = "smart"
@@ -93,7 +92,7 @@ module "event_notification" {
   resource_group_id         = module.resource_group.resource_group_id
   name                      = "${var.prefix}-en-fs"
   existing_kms_instance_crn = var.existing_kms_instance_crn
-  root_key_id               = var.root_key_id
+  root_key_id               = local.root_key_id
   kms_endpoint_url          = var.kms_endpoint_url
   tags                      = var.resource_tags
 
@@ -112,12 +111,11 @@ module "event_notification" {
   }
   region = var.region
   # COS Related
-  cos_destination_name    = module.cos.cos_instance_name
   cos_bucket_name         = module.cos.buckets[local.bucket_name].bucket_name
   cos_instance_id         = module.cos.cos_instance_guid
   cos_region              = var.region
   skip_en_cos_auth_policy = false
-  cos_endpoint            = module.cos.buckets[local.bucket_name].s3_endpoint_public
+  cos_endpoint            = "https://s3.${var.region}.cloud-object-storage.appdomain.cloud"
   cbr_rules = [
     {
       description      = "${var.prefix}-event notification access only from vpc"

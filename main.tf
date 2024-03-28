@@ -93,7 +93,7 @@ resource "ibm_iam_authorization_policy" "cos_policy" {
   source_resource_instance_id = ibm_resource_instance.en_instance.guid
   target_service_name         = "cloud-object-storage"
   target_resource_instance_id = var.cos_instance_id
-  roles                       = ["Object Writer"]
+  roles                       = ["Object Writer", "Reader"]
   description                 = "Allow EN instance with GUID ${ibm_resource_instance.en_instance.guid} read access to the COS instance with ID ${var.cos_instance_id}."
 }
 
