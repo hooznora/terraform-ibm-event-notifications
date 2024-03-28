@@ -113,9 +113,9 @@ module "event_notification" {
   # COS Related
   cos_bucket_name         = module.cos.buckets[local.bucket_name].bucket_name
   cos_instance_id         = module.cos.cos_instance_guid
-  cos_region              = var.region
+  cos_region              = var.cos_region
   skip_en_cos_auth_policy = false
-  cos_endpoint            = "https://s3.private.${var.region}.cloud-object-storage.appdomain.cloud"
+  cos_endpoint            = "https://${module.cos.buckets[local.bucket_name].s3_endpoint_private}"
   cbr_rules = [
     {
       description      = "${var.prefix}-event notification access only from vpc"

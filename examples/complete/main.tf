@@ -38,6 +38,10 @@ module "key_protect_all_inclusive" {
 # Create Cloud Object Storage instance and a bucket
 ##############################################################################
 
+locals {
+  bucket_name = "${var.prefix}-bucket"
+}
+
 module "cos" {
   source                 = "terraform-ibm-modules/cos/ibm"
   version                = "7.5.0"
@@ -45,7 +49,7 @@ module "cos" {
   region                 = var.region
   cos_instance_name      = "${var.prefix}-cos"
   cos_tags               = var.resource_tags
-  bucket_name            = "${var.prefix}-bucket"
+  bucket_name            = local.bucket_name
   retention_enabled      = false # disable retention for test environments - enable for stage/prod
   kms_encryption_enabled = false
 }
@@ -107,8 +111,8 @@ module "event_notification" {
   cos_destination_name    = module.cos.cos_instance_name
   cos_bucket_name         = module.cos.bucket_name
   cos_instance_id         = module.cos.cos_instance_guid
-  cos_region              = var.region
-  cos_endpoint            = "https://s3.${var.region}.cloud-object-storage.appdomain.cloud"
+  cos_region              = var.cos_region
+  cos_endpoint            = "https://${module.cos.s3_endpoint_public}"
   cbr_rules = [
     {
       description      = "${var.prefix}-event notification access only from vpc"

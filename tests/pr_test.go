@@ -61,7 +61,7 @@ func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptio
 			TerraformDir:  dir,
 			Prefix:        prefix,
 			ResourceGroup: resourceGroup,
-			Region:        "us-south",
+			Region:        options.Region,
 			TerraformVars: map[string]interface{}{
 				"existing_kms_instance_crn": permanentResources["hpcs_south_crn"],
 				"root_key_crn":              permanentResources["hpcs_south_root_key_crn"],
@@ -107,6 +107,8 @@ func TestRunFSCloudExample(t *testing.T) {
 func TestDAInSchematics(t *testing.T) {
 	t.Parallel()
 
+	var region = validRegions[rand.Intn(len(validRegions))]
+
 	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
 		Testing: t,
 		Prefix:  "scc-da",
@@ -124,7 +126,7 @@ func TestDAInSchematics(t *testing.T) {
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
 		{Name: "resource_group_name", Value: options.Prefix, DataType: "string"},
-		{Name: "region", Value: "us-south", DataType: "string"},
+		{Name: "region", Value: region, DataType: "string"},
 		{Name: "existing_kms_instance_crn", Value: permanentResources["hpcs_south_crn"], DataType: "string"},
 		{Name: "kms_region", Value: "us-south", DataType: "string"}, // KMS instance is in us-south
 		{Name: "kms_endpoint_url", Value: permanentResources["hpcs_south_private_endpoint"], DataType: "string"},

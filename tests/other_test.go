@@ -12,8 +12,6 @@ const basicExampleDir = "examples/basic"
 func TestRunBasicExample(t *testing.T) {
 	t.Parallel()
 
-	t.Skip("Skipping upgrade test until initial code is in master branch")
-
 	options := setupOptions(t, "event-notification-basic", basicExampleDir)
 
 	output, err := options.RunTestConsistency()
